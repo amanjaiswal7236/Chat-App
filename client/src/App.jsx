@@ -6,6 +6,8 @@ import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 import Register from './pages/Register'
 import LogIn from './pages/LogIn'
+import Chats from './pages/Chats'
+import EmptyChats from './components/EmptyChats'
 
 function App() {
   return (
@@ -15,8 +17,10 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/signup" element={<Register />} />
         <Route path='/login' element={<LogIn/>} />
+        <Route path="/inbox" element={<Chats />} />
+        <Route path = "/empty" element={<EmptyChats/>} />
       </Routes>
     </BrowserRouter>
   )
