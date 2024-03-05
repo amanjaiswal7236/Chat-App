@@ -125,8 +125,9 @@ function Register() {
                                     <label
                                         htmlFor="checkbox-2"
                                         className="text-sm font-medium text-white">
-                                        I agree to the terms and conditions
+                                        I agree to the <span className="text-[#ae7aff] hover:underline">terms and conditions</span>
                                     </label>
+                                    
                                 </div>
                             </div>
                             <button
