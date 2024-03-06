@@ -13,7 +13,7 @@ function Header() {
                 {/* Register Button */}
                 <div className="flex w-max flex-shrink-0 items-center justify-end gap-6">
                     <Link to="/login" className="w-max items-center justify-center border-[1px] border-white p-3 text-center font-bold text-white md:inline-flex">Login</Link>
-                    <Link to="/register" className="w-max items-center justify-center bg-white p-3 text-center font-bold text-black md:inline-flex">Register</Link>
+                    <Link to="/signup" className="w-max items-center justify-center bg-white p-3 text-center font-bold text-black md:inline-flex">Register</Link>
                 </div>
             </header>
         </div>
