@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
+import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom'
-import  useSignup  from '../hooks/useSignup'
+import {Spinner} from 'flowbite-react'
 
 const Register = () => {
 
@@ -12,12 +13,39 @@ const Register = () => {
         password: ''
 
     });
-    const { loading , signup} = useSignup()
+
+    const [loading, setLoading] = useState(false)
+
     const navigate = useNavigate()
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        await signup(inputs);
+        if(!inputs.firstname || !inputs.lastname || !inputs.username || !inputs.email || !inputs.password) {
+            return toast.error('Please fill in all fields')
+        }
+        try {
+            setLoading(true)
+            const response = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(inputs)
+            })
+            const data = await response.json()
+            console.log(data)
+            if (data.error) {
+                toast.error(data.error)
+            } else {
+                toast.success(data.message)
+                navigate('/login')
+            }
+            setLoading(false)
+        } catch (error) {
+            console.log(error)
+        }
 
     }
 
@@ -165,8 +193,13 @@ const Register = () => {
                                     </div>
                                 </div>
                                 <button
-                                    className="w-full bg-[#ae7aff] p-3 text-center font-bold text-black shadow-[5px_5px_0px_0px_#4f4e4e] transition-all duration-150 ease-in-out active:translate-x-[5px] active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#4f4e4e]">
-                                    Create Account
+                                    className="w-full bg-[#ae7aff] p-3 text-center font-bold text-black shadow-[5px_5px_0px_0px_#4f4e4e] transition-all duration-150 ease-in-out active:translate-x-[5px] active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#4f4e4e]" disabled={loading}>
+                                    {loading ? 
+                                        <>
+                                            <Spinner size="sm"/>
+                                            <span className="ml-2">Creating Account...</span>
+                                        </>
+                                    : 'Create Account'}
                                 </button>
                                 <div className="mx-auto my-3 flex w-full max-w-md items-center justify-center gap-4 text-white">
                                     <hr className="w-full border-[0.1px] border-white" />

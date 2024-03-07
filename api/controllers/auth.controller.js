@@ -10,7 +10,6 @@ export const signup = async (req, res, next) => {
         error.statusCode = 400;
         return next(error);
     }
-
     try {
         const user = await User.findOne({ username });
 
@@ -38,7 +37,7 @@ export const signup = async (req, res, next) => {
 export const login = async (req, res, next) => {
     const { username, password } = req.body;
 
-    if (!username || !password) {
+    if (!username || !password || username === '' || password === '') {
         const error = new Error('All fields are required');
         error.statusCode = 400;
         return next(error);
@@ -56,7 +55,7 @@ export const login = async (req, res, next) => {
         }
 
         const token = jwt.sign(
-            { id: validUser._id, isAdmin: validUser.isAdmin },
+            { id: validUser._id},
             process.env.JWT_SECRET
         );
 

@@ -1,46 +1,48 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { set } from 'mongoose'
+import { Spinner } from 'flowbite-react'
 
 function LogIn() {
-    const [formData, setFormData] = useState({})
+    const [formData, setFormData] = useState({
+        username: '',
+        password: ''
+    })
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value })
-    }
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.username || !formData.password) {
-            return toast.error('All fields are required')
+            return toast.error('All fields are required');
         }
-        setLoading(true)
+        setLoading(true);
         try {
-    
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(formData)
-            })
+            });
             const data = await response.json();
-            if (data.error) {
-                setLoading(false)
-                return toast.error(data.error)
+            if (response.ok) {
+                // Successful login
+                toast.success('Logged in successfully');
+                setLoading(false);
+                navigate('/');
             } else {
-                toast.success('Logged in successfully')
-                setLoading(false)
-                navigate('/')
+                // Unsuccessful login, display error message
+                setLoading(false);
+                toast.error(data.error || 'An error occurred');
             }
-    
         } catch (error) {
-            setLoading(false)
-            toast.error('An error occurred')
+            setLoading(false);
+            toast.error('An error occurred');
         }
-    }
+    };
+    
     
     return (
         <div>
@@ -114,8 +116,13 @@ function LogIn() {
                                     </div>
                                 </div>
                                 <button
-                                    className="w-full bg-[#ae7aff] p-3 text-center font-bold text-black shadow-[5px_5px_0px_0px_#4f4e4e] transition-all duration-150 ease-in-out active:translate-x-[5px] active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#4f4e4e]">
-                                    Log in
+                                    className="w-full bg-[#ae7aff] p-3 text-center font-bold text-black shadow-[5px_5px_0px_0px_#4f4e4e] transition-all duration-150 ease-in-out active:translate-x-[5px] active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#4f4e4e]" disabled={loading}>
+                                    {loading ? 
+                                        <>
+                                            <Spinner size="sm" />
+                                            <span className="ml-2">Logging in...</span>
+                                        </>
+                                    : 'Login'}
                                 </button>
                                 <div className="mx-auto my-3 flex w-full max-w-md items-center justify-center gap-4 text-white">
                                     <hr className="w-full border-[0.1px] border-white" />
