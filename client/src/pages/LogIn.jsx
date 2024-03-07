@@ -1,24 +1,26 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import toast from 'react-hot-toast'
+import { useSelector, useDispatch } from 'react-redux'
 import { Spinner } from 'flowbite-react'
+import { signInStart, signInFailure, signInSuccess } from '../redux/user/userSlice'
 
 function LogIn() {
     const [formData, setFormData] = useState({
         username: '',
         password: ''
     })
-    const [loading, setLoading] = useState(false)
+    const { loading, error: errorMessage } = useSelector(state => state.user);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.username || !formData.password) {
-            return toast.error('All fields are required');
+            return dispatch(signInFailure('Please fill in all fields'));
         }
-        setLoading(true);
+
         try {
+            dispatch(signInStart());
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: {
@@ -29,21 +31,18 @@ function LogIn() {
             const data = await response.json();
             if (response.ok) {
                 // Successful login
-                toast.success('Logged in successfully');
-                setLoading(false);
+                dispatch(signInSuccess(data));
                 navigate('/');
             } else {
                 // Unsuccessful login, display error message
-                setLoading(false);
-                toast.error(data.error || 'An error occurred');
+                dispatch(signInFailure(data.message));
             }
         } catch (error) {
-            setLoading(false);
-            toast.error('An error occurred');
+            dispatch(signInFailure('An error occurred. Please try again.'));
+            console.error('An error occurred:', error);
         }
     };
-    
-    
+
     return (
         <div>
             <div className="min-h-screen bg-[#121212]">
@@ -67,7 +66,7 @@ function LogIn() {
                                     <label className="text-xs text-slate-200">Username or email</label>
                                     <input
                                         value={formData.username}
-                                        onChange={(e)=>setFormData({...formData, username:e.target.value})}
+                                        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                                         placeholder="Enter a username or email..."
                                         autoComplete="false"
                                         className="w-full border-[1px] border-white bg-black p-4 text-white placeholder:text-gray-500" />
@@ -76,7 +75,7 @@ function LogIn() {
                                     <label className="text-xs text-slate-200">Password</label>
                                     <input
                                         value={formData.password}
-                                        onChange={(e)=>setFormData({...formData, password:e.target.value})}
+                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                         placeholder="Enter a password..."
                                         autoComplete="false"
                                         type="password"
@@ -117,12 +116,12 @@ function LogIn() {
                                 </div>
                                 <button
                                     className="w-full bg-[#ae7aff] p-3 text-center font-bold text-black shadow-[5px_5px_0px_0px_#4f4e4e] transition-all duration-150 ease-in-out active:translate-x-[5px] active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#4f4e4e]" disabled={loading}>
-                                    {loading ? 
+                                    {loading ?
                                         <>
                                             <Spinner size="sm" />
                                             <span className="ml-2">Logging in...</span>
                                         </>
-                                    : 'Login'}
+                                        : 'Login'}
                                 </button>
                                 <div className="mx-auto my-3 flex w-full max-w-md items-center justify-center gap-4 text-white">
                                     <hr className="w-full border-[0.1px] border-white" />
@@ -170,7 +169,7 @@ function LogIn() {
                                     <Link to='/signup' className="cursor-pointer font-bold hover:underline">Create an account</Link>
                                 </p>
                             </div>
-
+                            
                         </div>
                     </div>
 
