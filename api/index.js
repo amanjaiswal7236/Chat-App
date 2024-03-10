@@ -25,7 +25,7 @@ app.use('/api/auth', authRoutes);
 
 app.use('/api/message', messageRoutes);
 
-app.use('/api/user', userRoutes);
+app.use('/api/users', userRoutes);
 
 
 
