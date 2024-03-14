@@ -3,6 +3,36 @@ import {Link} from 'react-router-dom';
 import { useSelector} from 'react-redux';
 import ProfileDropdown from './ProfileDropdown';
 
+
+const handleLogout = async () => {
+    try {
+        // Perform logout logic
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
+
+        // Send a request to the logout route
+        const response = await fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            // Successful logout
+            window.location.href = '/login'; // Redirect the user to the login page
+        } else {
+            // Unsuccessful logout
+            console.error('Logout failed:', response.statusText);
+            // Handle logout failure as needed
+        }
+    } catch (error) {
+        console.error('An error occurred during logout:', error);
+        // Handle logout error as needed
+    }
+};
+
+
 function Header() {
     const {currentUser} = useSelector(state => state.user);
     return (
@@ -17,7 +47,7 @@ function Header() {
                 { currentUser ? (
                     <div className="flex w-max flex-shrink-0 items-center justify-end gap-6">
                         <ProfileDropdown currentUser={currentUser} />
-                        <Link to="/logout" className="w-max items-center justify-center bg-white p-3 text-center font-bold text-black md:inline-flex">Logout</Link>
+                        <Link to="/logout" className="w-max items-center justify-center bg-white p-3 text-center font-bold text-black md:inline-flex" onClick={handleLogout}>Logout</Link>
                     </div>
                 ) : (
                     <div className="flex w-max flex-shrink-0 items-center justify-end gap-6">

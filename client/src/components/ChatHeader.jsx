@@ -1,6 +1,7 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
-function InboxHeader() {
+function ChatHeader() {
     return (
         <header className="fixed top-0 z-10 mx-auto flex w-full max-w-full items-center justify-between border-b-[1px] border-b-slate-300 bg-[#121212] p-4 text-white lg:px-10">
             <h1 className="text-xl font-extrabold md:text-3xl">Inbox</h1>
@@ -27,7 +28,7 @@ function InboxHeader() {
                         alt="avatar"
                         className="h-10 w-10 rounded-full object-cover" />
                 </div>
-                <button className="hidden w-max items-center justify-center border-[1px] border-white p-3 text-center font-bold text-white md:inline-flex">
+                <Link to='/create-personal' className="hidden w-max items-center justify-center border-[1px] border-white p-3 text-center font-bold text-white md:inline-flex">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
@@ -40,10 +41,10 @@ function InboxHeader() {
                             clipRule="evenodd"></path>
                     </svg>
                     Create a chat
-                </button>
+                </Link>
             </div>
         </header>
     )
 }
 
-export default InboxHeader
+export default ChatHeader

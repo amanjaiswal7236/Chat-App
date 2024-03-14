@@ -14,43 +14,58 @@ function LogIn() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const handleSubmit = async (e) => {
+    const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (!formData.username || !formData.password) {
-            return dispatch(signInFailure('Please fill in all fields'));
+        if (!message.trim() || !selectedUser) {
+            return; // Don't send empty messages or if no user is selected
         }
-
+    
         try {
-            dispatch(signInStart());
-            const response = await fetch('/api/auth/login', {
+            // Dispatch the action to start sending the message
+            dispatch(sendMessageStart());
+    
+            // Make a POST request to your backend endpoint
+            const response = await fetch(`/api/message/send/${selectedUser.id}`, { // corrected the URL
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    receiverId: selectedUser.id,
+                    message
+                })
             });
+    
+            // Log the response before parsing
+            console.log('Response:', response);
+    
+            // Parse the response
             const data = await response.json();
+    
+            // Check if the request was successful
             if (response.ok) {
-                // Successful login
-                dispatch(signInSuccess(data));
-                navigate('/');
+                // Message sent successfully, dispatch success action
+                dispatch(sendMessageSuccess(data));
+                // Optionally, clear the message input field
+                setMessage('');
             } else {
-                // Unsuccessful login, display error message
-                dispatch(signInFailure(data.message));
+                // Error sending message, dispatch failure action
+                dispatch(sendMessageFailure(data.message));
             }
         } catch (error) {
-            dispatch(signInFailure('An error occurred. Please try again.'));
+            // Error occurred during message sending, dispatch failure action
+            dispatch(sendMessageFailure('An error occurred. Please try again.'));
             console.error('An error occurred:', error);
         }
     };
-
+    
     return (
         <div>
             <div className="min-h-screen bg-[#121212]">
                 <header className="fixed top-0 z-10 mx-auto flex w-full max-w-full items-center justify-between border-b-[1px] border-b-slate-300 bg-[#121212] p-4 text-white lg:px-10">
                     <h1 className="text-xl font-extrabold md:text-3xl">Login</h1>
                     <div className="flex w-max flex-shrink-0 items-center justify-end gap-6">
-                        <button className="hidden w-max items-center justify-center border-[1px] border-white p-3 text-center font-bold text-white md:inline-flex">Register</button>
+                        <Link to="/signup" className="hidden w-max items-center justify-center border-[1px] border-white p-3 text-center font-bold text-white md:inline-flex">Register</Link>
                     </div>
                 </header>
                 <form onSubmit={handleSubmit}>

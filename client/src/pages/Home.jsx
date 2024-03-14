@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom if you're using it for navigation
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -12,14 +13,10 @@ function Home() {
         </div>
         <div className="md:w-1/2">
           <h1 className="text-3xl font-bold mb-4 text-white mt-16">Welcome to the Home Page</h1>
-          <p className="text-lg text-white mb-4 mt-5">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis non ex id mi consequat fringilla. Sed quis sapien vel enim maximus vestibulum. 
-            Nulla consectetur velit vel nisi condimentum luctus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae;
-            Phasellus feugiat lorem id velit vehicula consequat. Duis vestibulum eleifend mi, a rhoncus quam mattis a. Fusce vehicula, tortor nec varius 
-            scelerisque, or nec varius 
-            scelerisque, libero purus vehicula ligula, ut mollis nisi mi a libero. Ut pretium ultricies nisl, nec volutpat dui rhoncus or nec varius 
-            scelerisque, libero purus vehicula ligula, ut mollis nisi mi a libero. Ut pretium ultricies nisl, nec volutpat dui rhoncus nec. nec. libero purus vehicula ligula, ut mollis nisi mi a libero. Ut pretium ultricies nisl, nec volutpat dui rhoncus nec.
-          </p>
+          {/* Add a button to start conversation */}
+          <Link to="/inbox" className="w-full mt-9 bg-[#ae7aff] p-3 text-center font-bold text-black shadow-[5px_5px_0px_0px_#4f4e4e] transition-all duration-150 ease-in-out active:translate-x-[5px] active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#4f4e4e]">
+            Start Conversation
+          </Link>
         </div>
       </div>
       
