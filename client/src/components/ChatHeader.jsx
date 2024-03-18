@@ -1,7 +1,9 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 function ChatHeader() {
+    const currentUser = useSelector(state => state.user.currentUser);
     return (
         <header className="fixed top-0 z-10 mx-auto flex w-full max-w-full items-center justify-between border-b-[1px] border-b-slate-300 bg-[#121212] p-4 text-white lg:px-10">
             <h1 className="text-xl font-extrabold md:text-3xl">Inbox</h1>
@@ -24,7 +26,7 @@ function ChatHeader() {
                 </span>
                 <div className="h-11 w-11 rounded-full border-2 border-white">
                     <img
-                        src="https://images.pexels.com/photos/18148932/pexels-photo-18148932/free-photo-of-bench-city-man-people.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                        src={currentUser.profilePicture ? currentUser.profilePicture : 'https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login'}
                         alt="avatar"
                         className="h-10 w-10 rounded-full object-cover" />
                 </div>

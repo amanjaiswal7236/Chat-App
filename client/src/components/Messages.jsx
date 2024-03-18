@@ -1,122 +1,81 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
 
 function Messages() {
+    const currentUser = useSelector(state => state.user.currentUser);
+    const selectedUser = useSelector(state => state.conversation.selectedUser);
+    const [messages, setMessages] = useState([]);
+
+    useEffect(() => {
+        const fetchMessages = async () => {
+            try {
+                console.log('Fetching messages...');
+                if (!currentUser) {
+                    console.log('No current user');
+                    return;
+                }
+                const response = await axios.get(`/api/message/${currentUser._id}`);
+                console.log('Messages fetched:', response.data);
+                setMessages(response.data);
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+        };
+
+        fetchMessages();
+    }, [currentUser]);
+
+    console.log('currentUser:', currentUser);
+    console.log('selectedUser:', selectedUser);
+    console.log('messages:', messages);
+
+    // Filter messages based on sender and receiver
+    const filteredMessages = messages.filter(message => (
+        (message.receiverId === selectedUser._id && message.senderId === currentUser._id) ||
+        (message.senderId === selectedUser._id && message.receiverId === currentUser._id)
+    ));
+
+    console.log('filteredMessages:', filteredMessages);
+
     return (
         <div className="flex h-[calc(100%-53px)] w-full flex-col-reverse gap-8 overflow-y-auto px-2 py-4 md:h-[calc(100%-90px)] md:p-0">
-            <div className="flex min-w-[150px] max-w-[80%] items-start justify-start gap-2 text-white md:max-w-[70%]">
-                <img
-                    className="flex aspect-square h-7 w-7 flex-shrink-0 rounded-full object-cover md:h-10 md:w-10"
-                    src="https://images.pexels.com/photos/18107024/pexels-photo-18107024/free-photo-of-an-old-city-view.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                    alt="avatar" />
-                <div className="flex w-full max-w-[70%] flex-col gap-2">
-                    <p className="text-xs">Jane Smith</p>
-                    <div
-                        className="relative w-fit bg-[#343434] p-3 text-sm after:absolute after:left-0 after:top-0 after:border-r-[15px] after:border-t-[15px] after:border-r-transparent after:border-t-[#121212]">
-                        <div className="flex w-full items-center justify-center gap-1.5 px-3 py-1">
-                            <span className="h-2 w-2 animate-pulse rounded-full bg-gray-300"></span>
-                            <span className="h-2 w-2 animate-pulse rounded-full bg-gray-300"></span>
-                            <span className="h-2 w-2 animate-pulse rounded-full bg-gray-300"></span>
+            {filteredMessages.slice().reverse().map((message, index) => (
+                <div key={index} className={`flex min-w-[150px] max-w-[80%] items-start justify-start gap-2 text-white md:max-w-[70%] ${message.senderId === currentUser._id ? 'ml-auto flex-row-reverse' : 'mr-0'}`}>
+                    <img
+                        className="flex aspect-square h-7 w-7 flex-shrink-0 rounded-full object-cover md:h-10 md:w-10"
+                        src={message.senderId === currentUser._id ? currentUser.profilePicture : selectedUser.profilePicture}
+                        alt="avatar"
+                    />
+                    <div className={`flex w-full flex-col gap-1 md:gap-2 ${message.senderId === currentUser._id ? 'items-end justify-end' : ''}`}>
+                        <p className="text-[10px] md:text-xs">
+                            {message.senderId === currentUser._id ? currentUser.name : selectedUser.name}
+                            <span className="ml-2 text-gray-400">10 minutes ago</span>
+                        </p>
+                        <div
+                            className={`relative w-fit p-2 text-xs after:absolute after:top-0 after:border-t-[15px] after:border-t-[#121212] md:p-3 md:text-sm ${message.senderId === currentUser._id ? 'bg-[#ae7aff] after:right-0 after:border-l-[15px] after:border-l-transparent' : 'bg-[#343434] after:left-0 after:border-r-[15px] after:border-r-transparent'}`}
+                        >
+                            {message.message}
                         </div>
+                        {/* Additional rendering for images sent by selected user */}
+                        {message.senderId !== currentUser.id && message.images && (
+                            <div className="grid w-full grid-cols-2 items-start justify-start gap-1 md:max-w-[90%] md:gap-2 ml-auto">
+                                {message.images.map((image, index) => (
+                                    <img
+                                        key={index}
+                                        className="flex aspect-video w-full flex-shrink-0 object-cover"
+                                        src={image}
+                                        alt="avatar"
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
-            </div>
-            <div className="flex min-w-[150px] max-w-[80%] items-start justify-start gap-2 text-white md:max-w-[70%] ml-auto flex-row-reverse">
-                <img
-                    className="flex aspect-square h-7 w-7 flex-shrink-0 rounded-full object-cover md:h-10 md:w-10"
-                    src="https://images.pexels.com/photos/18148932/pexels-photo-18148932/free-photo-of-bench-city-man-people.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                    alt="avatar" />
-                <div className="flex w-full flex-col gap-1 md:gap-2 items-end justify-end">
-                    <p className="text-[10px] md:text-xs">
-                        Dan Abramov
-                        <span className="ml-2 text-gray-400">5 minutes ago</span>
-                    </p>
-                    <div
-                        className="relative w-fit p-2 text-xs after:absolute after:top-0 after:border-t-[15px] after:border-t-[#121212] md:p-3 md:text-sm bg-[#ae7aff] after:right-0 after:border-l-[15px] after:border-l-transparent">
-                        I&#x27;m good too, just catching up on some reading and enjoying the weather outside.
-                    </div>
-                    <div className="grid w-full grid-cols-2 items-start justify-start gap-1 md:max-w-[90%] md:gap-2 ml-auto">
-                        <img
-                            className="flex aspect-video w-full flex-shrink-0 object-cover"
-                            src="https://images.pexels.com/photos/18094275/pexels-photo-18094275.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                            alt="avatar" />
-                        <img
-                            className="flex aspect-video w-full flex-shrink-0 object-cover"
-                            src="https://images.pexels.com/photos/18148932/pexels-photo-18148932/free-photo-of-bench-city-man-people.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                            alt="avatar" />
-                        <img
-                            className="flex aspect-video w-full flex-shrink-0 object-cover"
-                            src="https://images.pexels.com/photos/18107024/pexels-photo-18107024/free-photo-of-an-old-city-view.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                            alt="avatar" />
-                    </div>
-                </div>
-            </div>
-            <div className="flex min-w-[150px] max-w-[80%] items-start justify-start gap-2 text-white md:max-w-[70%] mr-0">
-                <img
-                    className="flex aspect-square h-7 w-7 flex-shrink-0 rounded-full object-cover md:h-10 md:w-10"
-                    src="https://images.pexels.com/photos/18107024/pexels-photo-18107024/free-photo-of-an-old-city-view.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                    alt="avatar" />
-                <div className="flex w-full flex-col gap-1 md:gap-2">
-                    <p className="text-[10px] md:text-xs">
-                        Jane Smith
-                        <span className="ml-2 text-gray-400">10 minutes ago</span>
-                    </p>
-                    <div
-                        className="relative w-fit p-2 text-xs after:absolute after:top-0 after:border-t-[15px] after:border-t-[#121212] md:p-3 md:text-sm bg-[#343434] after:left-0 after:border-r-[15px] after:border-r-transparent">
-                        That sounds lovely! What book are you currently reading?
-                    </div>
-                </div>
-            </div>
-            <div className="flex min-w-[150px] max-w-[80%] items-start justify-start gap-2 text-white md:max-w-[70%] ml-auto flex-row-reverse">
-                <img
-                    className="flex aspect-square h-7 w-7 flex-shrink-0 rounded-full object-cover md:h-10 md:w-10"
-                    src="https://images.pexels.com/photos/18148932/pexels-photo-18148932/free-photo-of-bench-city-man-people.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                    alt="avatar" />
-                <div className="flex w-full flex-col gap-1 md:gap-2 items-end justify-end">
-                    <p className="text-[10px] md:text-xs">
-                        Dan Abramov
-                        <span className="ml-2 text-gray-400">15 minutes ago</span>
-                    </p>
-                    <div
-                        className="relative w-fit p-2 text-xs after:absolute after:top-0 after:border-t-[15px] after:border-t-[#121212] md:p-3 md:text-sm bg-[#ae7aff] after:right-0 after:border-l-[15px] after:border-l-transparent">
-                        I&#x27;m reading &#x27;The Great Gatsby&#x27; by F. Scott Fitzgerald. It&#x27;s a classic!
-                    </div>
-                </div>
-            </div>
-            <div className="flex min-w-[150px] max-w-[80%] items-start justify-start gap-2 text-white md:max-w-[70%] mr-0">
-                <img
-                    className="flex aspect-square h-7 w-7 flex-shrink-0 rounded-full object-cover md:h-10 md:w-10"
-                    src="https://images.pexels.com/photos/18107024/pexels-photo-18107024/free-photo-of-an-old-city-view.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                    alt="avatar" />
-                <div className="flex w-full flex-col gap-1 md:gap-2">
-                    <p className="text-[10px] md:text-xs">
-                        Jane Smith
-                        <span className="ml-2 text-gray-400">20 minutes ago</span>
-                    </p>
-                    <div
-                        className="relative w-fit p-2 text-xs after:absolute after:top-0 after:border-t-[15px] after:border-t-[#121212] md:p-3 md:text-sm bg-[#343434] after:left-0 after:border-r-[15px] after:border-r-transparent">
-                        Oh, I&#x27;ve heard great things about that book. Enjoy your reading!
-                    </div>
-                </div>
-            </div>
-            <div className="flex min-w-[150px] max-w-[80%] items-start justify-start gap-2 text-white md:max-w-[70%] ml-auto flex-row-reverse">
-                <img
-                    className="flex aspect-square h-7 w-7 flex-shrink-0 rounded-full object-cover md:h-10 md:w-10"
-                    src="https://images.pexels.com/photos/18148932/pexels-photo-18148932/free-photo-of-bench-city-man-people.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                    alt="avatar" />
-                <div className="flex w-full flex-col gap-1 md:gap-2 items-end justify-end">
-                    <p className="text-[10px] md:text-xs">
-                        Dan Abramov
-                        <span className="ml-2 text-gray-400">25 minutes ago</span>
-                    </p>
-                    <div
-                        className="relative w-fit p-2 text-xs after:absolute after:top-0 after:border-t-[15px] after:border-t-[#121212] md:p-3 md:text-sm bg-[#ae7aff] after:right-0 after:border-l-[15px] after:border-l-transparent">
-                        Thanks! It&#x27;s such a beautifully written novel.
-                    </div>
-                </div>
-            </div>
-
+            ))}
         </div>
-    )
+    );
+
 }
 
-export default Messages
+export default Messages;
