@@ -14,51 +14,36 @@ function LogIn() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const handleSendMessage = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!message.trim() || !selectedUser) {
-            return; // Don't send empty messages or if no user is selected
+        if (!formData.username || !formData.password) {
+            return dispatch(signInFailure('Please fill in all fields'));
         }
-    
+
         try {
-            // Dispatch the action to start sending the message
-            dispatch(sendMessageStart());
-    
-            // Make a POST request to your backend endpoint
-            const response = await fetch(`/api/message/send/${selectedUser.id}`, { // corrected the URL
+            dispatch(signInStart());
+            const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    receiverId: selectedUser.id,
-                    message
-                })
+                body: JSON.stringify(formData)
             });
-    
-            // Log the response before parsing
-            console.log('Response:', response);
-    
-            // Parse the response
             const data = await response.json();
-    
-            // Check if the request was successful
             if (response.ok) {
-                // Message sent successfully, dispatch success action
-                dispatch(sendMessageSuccess(data));
-                // Optionally, clear the message input field
-                setMessage('');
+                // Successful login
+                dispatch(signInSuccess(data));
+                navigate('/');
             } else {
-                // Error sending message, dispatch failure action
-                dispatch(sendMessageFailure(data.message));
+                // Unsuccessful login, display error message
+                dispatch(signInFailure(data.message));
             }
         } catch (error) {
-            // Error occurred during message sending, dispatch failure action
-            dispatch(sendMessageFailure('An error occurred. Please try again.'));
+            dispatch(signInFailure('An error occurred. Please try again.'));
             console.error('An error occurred:', error);
         }
     };
-    
+
     return (
         <div>
             <div className="min-h-screen bg-[#121212]">

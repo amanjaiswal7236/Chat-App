@@ -1,14 +1,18 @@
 import React, { useState } from 'react'
 import useSendMessage from "../hooks/useSendMessage.js";
-function MessageInput() {
+import { useSelector } from 'react-redux';
 
+function MessageInput() {
     const [message, setMessage] = useState("");
-    const { loading, sendMessage } = useSendMessage();
+    const selectedUser = useSelector(state => state.conversation.selectedUser);
+    const { loading, sendMessage, messages } = useSendMessage();
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (!message) return;
-        await sendMessage(message);
+        if (!message || !selectedUser) return; // Ensure message and selectedUser are defined
+        console.log("Sending message:", message);
+        console.log("To:", selectedUser.username);
+        await sendMessage(message, selectedUser.userId);
         setMessage("");
     };
 
@@ -19,7 +23,7 @@ function MessageInput() {
     }
 
     return (
-        <form className='mt-5' onSubmit={handleSendMessage}>
+        <form className='mt-2' onSubmit={handleSendMessage}>
             <div className="sticky top-full flex w-full items-center justify-start gap-1 border-t-[1px] border-white px-4 py-2 md:gap-4 md:border-[1px] md:shadow-[5px_5px_0px_0px_#4f4e4e]">
                 <img
                     className="hidden aspect-square h-5 w-5 flex-shrink-0 rounded-full object-cover md:flex md:h-10 md:w-10"
