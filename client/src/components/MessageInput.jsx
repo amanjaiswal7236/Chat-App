@@ -27,7 +27,7 @@ function MessageInput() {
             setLoading(false);
         }
     };
-    
+
 
     const handleChange = (event) => {
         setMessage(event.target.value);
@@ -35,6 +35,16 @@ function MessageInput() {
 
     return (
         <form className='mt-2' onSubmit={handleSendMessage}>
+            <div className="relative">
+                {showEmojiPicker && <EmojiPicker
+                    onEmojiClick={(event, emojiObject) => setMessage(message + emojiObject.emoji)}
+                    disableSkinTonePicker={true}
+                    theme='dark'
+                    emojiStyle='apple'
+                    width={window.innerWidth > 768 ? '300px' : '100%'}
+                    pickerStyle={{ position: 'absolute', bottom: '40px', right: '0' }}
+                />}
+            </div>
             <div className="sticky top-full flex w-full items-center justify-start gap-1 border-t-[1px] border-white px-4 py-2 md:gap-4 md:border-[1px] md:shadow-[5px_5px_0px_0px_#4f4e4e]">
                 <img
                     className="hidden aspect-square h-5 w-5 flex-shrink-0 rounded-full object-cover md:flex md:h-10 md:w-10"
@@ -61,7 +71,6 @@ function MessageInput() {
                             d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z"></path>
                     </svg>
                 </button>
-                {showEmojiPicker && <EmojiPicker />}
                 <button className="flex h-7 w-7 flex-shrink-0 items-center justify-center p-1 md:h-10 md:w-10">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -93,4 +102,4 @@ function MessageInput() {
     )
 }
 
-export default MessageInput
+export default MessageInput;

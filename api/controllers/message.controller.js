@@ -27,10 +27,13 @@ export const sendMessage = async (req, res) => {
             conversation.messages.push(newMessage._id);
         }
 
-        //socket io function to emit message
-
 
         await Promise.all([newMessage.save(), conversation.save()]);
+
+        const receiverSocketId = getReceiverSocketId(receiverId);
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("getMessage", newMessage);
+        }        
 
         res.status(201).json(newMessage);
 

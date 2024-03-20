@@ -2,10 +2,14 @@ import React from 'react';
 import useGetConversationUser from '../hooks/useGetConversationUser';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedUser } from '../redux/user/conversationSlice';
+import { useSocketContext } from '../context/SocketContext';
 
 function ConversationList() {
     const { loading, conversations } = useGetConversationUser();
     const selectedUser = useSelector(state => state.conversation.selectedUser);
+    const {onlineUsers} = useSocketContext();
+
+    const isOnline = onlineUsers.includes(selectedUser?._id);
     const dispatch = useDispatch();
 
     const handleConversationClick = (conversation) => {
@@ -29,6 +33,7 @@ function ConversationList() {
                                     className="flex aspect-square h-10 w-10 flex-shrink-0 rounded-full object-cover"
                                     src={conversation.profilePicture || "https://via.placeholder.com/150"}
                                     alt="avatar" />
+                                    {isOnline && <span className="bg-green-500 h-2 w-2 rounded-full absolute bottom-0 right-0"></span>}
                                 <div className="flex w-full flex-col items-start justify-start gap-1 truncate text-ellipsis">
                                     <div className="flex w-full items-center justify-between text-[10px] md:text-xs">
                                         <p className="text-gray-400">{conversation.username}</p>

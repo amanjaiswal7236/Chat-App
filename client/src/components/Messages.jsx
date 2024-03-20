@@ -15,7 +15,7 @@ function Messages() {
                     console.log('No current user');
                     return;
                 }
-                const response = await axios.get(`/api/message/${currentUser._id}`);
+                const response = await axios.get(`/api/message/${selectedUser._id}`);
                 console.log('Messages fetched:', response.data);
                 setMessages(response.data);
             } catch (error) {
@@ -24,7 +24,7 @@ function Messages() {
         };
 
         fetchMessages();
-    }, [currentUser]);
+    }, [selectedUser]);
 
     console.log('currentUser:', currentUser);
     console.log('selectedUser:', selectedUser);
