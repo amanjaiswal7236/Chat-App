@@ -2,6 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 
+function extractTime(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+
+    // Calculate time difference in minutes
+    const diffMins = Math.round(diffMs / (1000 * 60));
+
+    if (diffMins < 1) {
+        return 'just now';
+    } else if (diffMins < 60) {
+        return `${diffMins} minute${diffMins === 1 ? '' : 's'} ago`;
+    } else if (diffMins < 24 * 60) {
+        const hours = Math.floor(diffMins / 60);
+        return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+    } else if (diffMins < 48 * 60) {
+        return 'yesterday';
+    } else {
+        const days = Math.floor(diffMins / (24 * 60));
+        return `${days} day${days === 1 ? '' : 's'} ago`;
+    }
+}
+
+
 function Messages() {
     const currentUser = useSelector(state => state.user.currentUser);
     const selectedUser = useSelector(state => state.conversation.selectedUser);
@@ -24,7 +48,7 @@ function Messages() {
         };
 
         fetchMessages();
-    }, [selectedUser]);
+    }, [selectedUser, currentUser]);
 
     console.log('currentUser:', currentUser);
     console.log('selectedUser:', selectedUser);
@@ -50,7 +74,7 @@ function Messages() {
                     <div className={`flex w-full flex-col gap-1 md:gap-2 ${message.senderId === currentUser._id ? 'items-end justify-end' : ''}`}>
                         <p className="text-[10px] md:text-xs">
                             {message.senderId === currentUser._id ? currentUser.name : selectedUser.name}
-                            <span className="ml-2 text-gray-400">10 minutes ago</span>
+                            <span className="ml-2 text-gray-400">{extractTime(message.createdAt)}</span>
                         </p>
                         <div
                             className={`relative w-fit p-2 text-xs after:absolute after:top-0 after:border-t-[15px] after:border-t-[#121212] md:p-3 md:text-sm ${message.senderId === currentUser._id ? 'bg-[#ae7aff] after:right-0 after:border-l-[15px] after:border-l-transparent' : 'bg-[#343434] after:left-0 after:border-r-[15px] after:border-r-transparent'}`}

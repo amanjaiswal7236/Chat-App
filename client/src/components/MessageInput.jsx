@@ -28,7 +28,6 @@ function MessageInput() {
         }
     };
 
-
     const handleChange = (event) => {
         setMessage(event.target.value);
     };
