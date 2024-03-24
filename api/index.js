@@ -9,7 +9,7 @@ import authRoutes from './routes/auth.routes.js';
 import messageRoutes from './routes/message.routes.js';
 import userRoutes from './routes/user.routes.js';
 
-const app = express();
+import { app, server } from "./socket/socket.js"
 
 app.use(cors());
 app.use(express.json());
@@ -27,6 +27,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/message', messageRoutes);
 app.use('/api/users', userRoutes);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

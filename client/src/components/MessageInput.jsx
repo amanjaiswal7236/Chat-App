@@ -55,7 +55,7 @@ function MessageInput() {
                     value={message}
                     onChange={handleChange}
                 />
-                <button className="hidden h-5 w-5 flex-shrink-0 items-center justify-center p-1 md:flex md:h-10 md:w-10" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                <button className="hidden h-5 w-5 flex-shrink-0 items-center justify-center p-1 md:flex md:h-10 md:w-10">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"

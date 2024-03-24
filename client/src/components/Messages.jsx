@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { useSocketContext } from '../context/SocketContext';
 
 function extractTime(dateString) {
     const date = new Date(dateString);
@@ -25,8 +26,9 @@ function extractTime(dateString) {
     }
 }
 
-
 function Messages() {
+    const { socket } = useSocketContext();
+
     const currentUser = useSelector(state => state.user.currentUser);
     const selectedUser = useSelector(state => state.conversation.selectedUser);
     const [messages, setMessages] = useState([]);
@@ -61,6 +63,24 @@ function Messages() {
     ));
 
     console.log('filteredMessages:', filteredMessages);
+
+    useEffect(() => {
+        // Check if socket is available before setting up the event listener
+        if (socket) {
+            const handleNewMessage = (newMessage) => {
+                newMessage.shouldShake = true; // Assuming you need to add this property
+                setMessages(prevMessages => [...prevMessages, newMessage]);
+            };
+
+            // Here you would set up your socket listener for "newMessage" event
+            socket.on("newMessage", handleNewMessage);
+
+            // Remember to return a cleanup function to remove the listener when component unmounts
+            return () => {
+                socket.off("newMessage", handleNewMessage);
+            };
+        }
+    }, [socket, setMessages]);
 
     return (
         <div className="flex h-[calc(100%-53px)] w-full flex-col-reverse gap-8 overflow-y-auto px-2 py-4 md:h-[calc(100%-90px)] md:p-0">
