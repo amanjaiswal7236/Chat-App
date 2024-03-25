@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate inst
 import axios from 'axios';
 import ChatHeader from '../components/ChatHeader';
 import { useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
 
 function CreatePersonlChat() {
     const [users, setUsers] = useState([]);
@@ -23,12 +24,24 @@ function CreatePersonlChat() {
         fetchUsers();
     }, []);
 
-    const handleStartChatting = () => {
-        if (selectedUser) {
-            // Redirect to the chat page with the user IDs as URL parameters
-            navigate(`/chat?user1=${currentUser}&user2=${selectedUser}`); // Use navigate instead of history.push
+
+    const handleStartChatting = async () => {
+        if (!selectedUser) return alert("Please select a user");
+        try {
+            const response = await axios.post(`/api/users/createchat`, { receiverId: selectedUser, senderId: currentUser._id});
+            const { data } = response;
+            if (response.status === 200) {
+                toast.error("Chat already exists")
+                return;
+            }
+            toast.success("Chat created successfully");
+            navigate(`/inbox`);
+        } catch (error) {
+            console.error("Error creating chat:", error);
+            alert("Error creating chat. Please try again later.");
         }
     };
+    
 
     return (
         <div>

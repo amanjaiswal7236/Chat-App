@@ -42,7 +42,7 @@ function Messages() {
                     return;
                 }
                 const response = await axios.get(`/api/message/${selectedUser._id}`);
-                console.log('Messages fetched:', response.data);
+                //console.log('Messages fetched:', response.data);
                 setMessages(response.data);
             } catch (error) {
                 console.error('Error fetching messages:', error);
@@ -52,9 +52,9 @@ function Messages() {
         fetchMessages();
     }, [selectedUser, currentUser]);
 
-    console.log('currentUser:', currentUser);
-    console.log('selectedUser:', selectedUser);
-    console.log('messages:', messages);
+    //console.log('currentUser:', currentUser);
+    //console.log('selectedUser:', selectedUser);
+    //console.log('messages:', messages);
 
     // Filter messages based on sender and receiver
     const filteredMessages = messages.filter(message => (

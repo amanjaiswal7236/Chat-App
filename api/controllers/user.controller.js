@@ -35,3 +35,27 @@ export const conversationUsers = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
+export const createChat = async (req, res) => {
+    try {
+        const { receiverId } = req.body;
+        const senderId = req.user._id;
+
+        // Check if a conversation already exists between the sender and receiver
+        let conversation = await Conversation.findOne({
+            participants: { $all: [senderId, receiverId] },
+        });
+
+        // If conversation doesn't exist, create a new one
+        if (!conversation) {
+            conversation = await Conversation.create({
+                participants: [senderId, receiverId],
+            });
+        }
+
+        res.status(201).json({ message: 'Chat created successfully', conversation });
+    } catch (error) {
+        console.error("Error in createChat: ", error.message);
+        res.status(500).json({ message: error.message });
+    }
+};
